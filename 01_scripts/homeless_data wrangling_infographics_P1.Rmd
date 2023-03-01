@@ -1,0 +1,164 @@
+---
+title: "Homeless data wrangling for project one of the infographics course - JMM622-O"
+author: "Yuri Souza"
+date: "2023-03-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading the packages
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+if(!require(tidyverse))install.packages("tidyverse", dependencies = TRUE)
+if(!require(readxl)) install.packages("readxl", dependencies = TRUE)
+if(!require(purrr)) install.packages("purrr", dependencies = TRUE)
+if(!require(writexl)) install.packages("writexl", dependencies = TRUE)
+if(!require(openxlsx)) install.packages("openxlsx", dependencies = TRUE)
+if(!require(data.table)) install.packages("data.table", dependencies = TRUE)
+```
+
+## Setting directories and reading tables
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+
+path <- "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data"
+path
+
+regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/regions_ny.csv") %>% 
+  unique()
+regions
+
+file_path <- list.files(path, pattern="\\.xlsx$", full.names = TRUE)
+file_path
+
+
+#For each file in file_path
+homeless.tables <- purrr::map(file_path, ~
+                         #For each sheet
+                         purrr::map(2:3, function(i) {
+                           #Read the file with particular sheet nummber
+                           openxlsx::read.xlsx(.x, sheet=i, startRow=1)}) %>% 
+                         purrr::reduce(dplyr::full_join) %>%
+                         #Remove all NA rows
+                         #dplyr::filter(Reduce(`|`, across(.fns = ~!is.na(.)))) %>%
+                         #Add Year column at 1st position
+                         dplyr::mutate(YEAR = tools::file_path_sans_ext(basename(.x)), .before = 1))
+
+homeless.tables
+```
+
+## Binding the tables in a single one
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+homeless.tables.bind <- data.table::rbindlist(homeless.tables, 
+                                              use.names=TRUE, 
+                                              fill=FALSE, 
+                                              idcol=TRUE) %>% 
+  dplyr::rename_all(., .funs = toupper) %>% 
+  dplyr::filter(!"TOTAL.HOMELESS" == "s") %>% 
+  dplyr::mutate(TOTAL.HOMELESS = as.numeric(TOTAL.HOMELESS),
+                YEAR = as.numeric(stringr::str_extract(YEAR, ".0.."))) %>% 
+  dplyr::left_join(regions) %>% 
+  stats::na.omit() %>% 
+  dplyr::select(c(3,4,6,5,2))
+
+homeless.tables.bind
+
+write_csv(homeless.tables.bind, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.csv")
+
+```
+
+## Summarizing the tables by total individuals per year
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+
+homeless.tables.bind.year <- homeless.tables.bind %>% 
+  dplyr::group_by(YEAR) %>% 
+  dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS))
+homeless.tables.bind.year
+
+homeless.tables.bind.year.diff <- homeless.tables.bind.year %>% 
+  dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
+  tidyr::pivot_wider(names_from = YEAR, values_from = TOTAL.HOMELESS) %>% 
+  dplyr::mutate(DIFF = `2021`-`2009`,
+                PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
+  dplyr::filter(PCT_INCREASE != 0) %>% 
+  dplyr::filter_all(all_vars(!is.infinite(.)))
+homeless.tables.bind.year.diff
+
+write_csv(homeless.tables.bind.year.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.diff.csv")
+
+```
+
+## Summarizing the tables by total individuals per year and region
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+
+homeless.tables.bind.year.region <- homeless.tables.bind %>% 
+  dplyr::group_by(REGION, YEAR) %>% 
+  dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS)) %>% 
+  dplyr::ungroup() 
+homeless.tables.bind.year.region
+
+homeless.tables.bind.year.region.diff <- homeless.tables.bind.year.region %>% 
+  dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
+  tidyr::pivot_wider(names_from = YEAR, values_from = TOTAL.HOMELESS) %>% 
+  dplyr::mutate(DIFF = `2021`-`2009`,
+                PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
+  dplyr::filter(PCT_INCREASE != 0) %>% 
+  dplyr::filter_all(all_vars(!is.infinite(.)))
+homeless.tables.bind.year.region.diff
+
+write_csv(homeless.tables.bind.year.region.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.region.diff.csv")
+
+```
+
+## Summarizing the tables by total individuals per year and county
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+
+homeless.tables.bind.year.county <- homeless.tables.bind %>% 
+  dplyr::group_by(COUNTY, YEAR) %>% 
+  dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS))
+homeless.tables.bind.year.county
+
+
+homeless.tables.bind.year.county.diff <- homeless.tables.bind.year.county %>% 
+  dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
+  tidyr::pivot_wider(names_from = YEAR, values_from = TOTAL.HOMELESS) %>% 
+  dplyr::mutate(DIFF = `2021`-`2009`,
+                PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
+  dplyr::filter(PCT_INCREASE != 0) %>% 
+  dplyr::filter_all(all_vars(!is.infinite(.)))
+homeless.tables.bind.year.county.diff
+
+write_csv(homeless.tables.bind.year.county.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.county.diff.csv")
+
+
+```
+
+## Summarizing the tables by total individuals per year and school type
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+
+homeless.tables.bind.year.school <- homeless.tables.bind %>% 
+  dplyr::group_by(LEA.TYPE, YEAR) %>% 
+  dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS))
+homeless.tables.bind.year.school
+
+
+homeless.tables.bind.year.school.diff <- homeless.tables.bind.year.school %>% 
+  dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
+  tidyr::pivot_wider(names_from = YEAR, values_from = TOTAL.HOMELESS) %>% 
+  dplyr::mutate(DIFF = `2021`-`2009`,
+                PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
+  dplyr::filter(PCT_INCREASE != 0) %>% 
+  dplyr::filter_all(all_vars(!is.infinite(.)))
+homeless.tables.bind.year.school.diff
+
+write_csv(homeless.tables.bind.year.school.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.school.diff.csv")
+
+```
