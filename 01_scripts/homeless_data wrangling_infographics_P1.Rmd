@@ -24,10 +24,10 @@ if(!require(data.table)) install.packages("data.table", dependencies = TRUE)
 
 ```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
 
-path <- "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data"
+path <- "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data"
 path
 
-regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/regions_ny.csv") %>% 
+regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/regions_ny.csv") %>% 
   unique()
 regions
 
@@ -67,7 +67,7 @@ homeless.tables.bind <- data.table::rbindlist(homeless.tables,
 
 homeless.tables.bind
 
-write_csv(homeless.tables.bind, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.csv")
+write_csv(homeless.tables.bind, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.csv")
 
 ```
 
@@ -89,7 +89,7 @@ homeless.tables.bind.year.diff <- homeless.tables.bind.year %>%
   dplyr::filter_all(all_vars(!is.infinite(.)))
 homeless.tables.bind.year.diff
 
-write_csv(homeless.tables.bind.year.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.diff.csv")
+write_csv(homeless.tables.bind.year.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.diff.csv")
 
 ```
 
@@ -109,10 +109,13 @@ homeless.tables.bind.year.region.diff <- homeless.tables.bind.year.region %>%
   dplyr::mutate(DIFF = `2021`-`2009`,
                 PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
   dplyr::filter(PCT_INCREASE != 0) %>% 
-  dplyr::filter_all(all_vars(!is.infinite(.)))
+  dplyr::filter_all(all_vars(!is.infinite(.))) %>% 
+  tidyr::pivot_longer(cols = 2:3, values_to = "INDI", names_to = "YEAR") %>% 
+  dplyr::select(c(1,4,5,2,3))
+
 homeless.tables.bind.year.region.diff
 
-write_csv(homeless.tables.bind.year.region.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.region.diff.csv")
+write_csv(homeless.tables.bind.year.region.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.region.diff.csv")
 
 ```
 
@@ -132,10 +135,12 @@ homeless.tables.bind.year.county.diff <- homeless.tables.bind.year.county %>%
   dplyr::mutate(DIFF = `2021`-`2009`,
                 PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
   dplyr::filter(PCT_INCREASE != 0) %>% 
-  dplyr::filter_all(all_vars(!is.infinite(.)))
+  dplyr::filter_all(all_vars(!is.infinite(.))) %>% 
+  tidyr::pivot_longer(cols = 2:3, values_to = "INDI", names_to = "YEAR") %>% 
+  dplyr::select(c(1,4,5,2,3))
 homeless.tables.bind.year.county.diff
 
-write_csv(homeless.tables.bind.year.county.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.county.diff.csv")
+write_csv(homeless.tables.bind.year.county.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.county.diff.csv")
 
 
 ```
@@ -156,9 +161,11 @@ homeless.tables.bind.year.school.diff <- homeless.tables.bind.year.school %>%
   dplyr::mutate(DIFF = `2021`-`2009`,
                 PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
   dplyr::filter(PCT_INCREASE != 0) %>% 
-  dplyr::filter_all(all_vars(!is.infinite(.)))
+  dplyr::filter_all(all_vars(!is.infinite(.))) %>% 
+  tidyr::pivot_longer(cols = 2:3, values_to = "INDI", names_to = "YEAR") %>% 
+  dplyr::select(c(1,4,5,2,3))
 homeless.tables.bind.year.school.diff
 
-write_csv(homeless.tables.bind.year.school.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-02-23/Project_1/homeless_data wrangling_infographics_P1/00_data/homeless.tables.bind.year.school.diff.csv")
+write_csv(homeless.tables.bind.year.school.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.school.diff.csv")
 
 ```
