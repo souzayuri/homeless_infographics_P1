@@ -80,6 +80,8 @@ homeless.tables.bind.year <- homeless.tables.bind %>%
   dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS))
 homeless.tables.bind.year
 
+write_csv(homeless.tables.bind.year, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.csv")
+
 homeless.tables.bind.year.diff <- homeless.tables.bind.year %>% 
   dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
   tidyr::pivot_wider(names_from = YEAR, values_from = TOTAL.HOMELESS) %>% 
@@ -102,6 +104,8 @@ homeless.tables.bind.year.region <- homeless.tables.bind %>%
   dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS)) %>% 
   dplyr::ungroup() 
 homeless.tables.bind.year.region
+
+write_csv(homeless.tables.bind.year.region, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.region.csv")
 
 homeless.tables.bind.year.region.diff <- homeless.tables.bind.year.region %>% 
   dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
@@ -128,6 +132,7 @@ homeless.tables.bind.year.county <- homeless.tables.bind %>%
   dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS))
 homeless.tables.bind.year.county
 
+write_csv(homeless.tables.bind.year.county, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.county.csv")
 
 homeless.tables.bind.year.county.diff <- homeless.tables.bind.year.county %>% 
   dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
@@ -154,6 +159,7 @@ homeless.tables.bind.year.school <- homeless.tables.bind %>%
   dplyr::summarise(TOTAL.HOMELESS = sum(TOTAL.HOMELESS))
 homeless.tables.bind.year.school
 
+write_csv(homeless.tables.bind.year.school, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.school.csv")
 
 homeless.tables.bind.year.school.diff <- homeless.tables.bind.year.school %>% 
   dplyr::filter(YEAR == 2009 | YEAR ==  2021) %>% 
