@@ -204,3 +204,29 @@ homeless.tables.bind.year.school.diff
 #write_csv(homeless.tables.bind.year.school.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.school.diff.csv")
 
 ```
+## Summarizing the tables by grades per regions
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+
+
+homeless.ny_regions <- readr::read_csv("00_data/regions_ny.csv") %>% 
+  dplyr::unique()
+
+homeless.ny_grades_regions <- readr::read_csv("00_data/00_homeless_student_grades.csv") %>%        dplyr::left_join(homeless.ny_regions) %>% 
+  dplyr::select(c(20, 3:14,19)) %>% 
+  tidyr::pivot_longer(cols = 2:13, values_to = "Grades", names_to = "Age") %>% 
+  readr::write_csv("00_data/ny_homeless_student_grades_region.csv") %>% 
+  dplyr::group_by(Year, Age) %>% 
+  summarise(value = sum(Grades)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::filter(Year == "2009" | Year == "2021") %>% 
+  tidyr::pivot_wider(names_from = "Year", values_from = "value") %>% 
+  dplyr::mutate(DIFF = `2021`-`2009`,
+                PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
+  dplyr::filter(PCT_INCREASE != 0) %>% 
+  #tidyr::pivot_longer(cols = 2:3, names_to = "Year", values_to = "Indiv") %>% 
+  readr::write_csv("00_data/ny_homeless_student_grades_region_diff.csv")
+  
+
+
+```
