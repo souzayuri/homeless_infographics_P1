@@ -1,9 +1,28 @@
 ---
-title: "Homeless data wrangling for project one of the infographics course - JMM622-O"
+title: "Project One: Homelessness"
 author: "Yuri Souza"
-date: "2023-03-01"
-output: pdf_document
+date: "2023-03-07"
+output:
+  pdf_document: default
+  html_document: default
 ---
+
+# **This file contains the workflow I used for the project topic Homelessness**
+
+I choose to work with homeless students in New York state. I picked up this topic because this is probably the social class most affected by homelessness, given that they are young and must make decisions that will guide and impact adult life. Everything I used here is also available on my [*GitHub*](https://github.com/souzayuri/homeless_infographics_P1).
+
+The infochartic was designed mainly in four sections. 
+**1.** The first section includes a chart containing the total number of homeless students from 2009 to 2021. I decided to use a line chart because it is easier to see trends in time. Aligned with this chart, I included a map of students' homeless per county in New York state. I decided to use counties because I want to show that this problem is happening across the whole state. 
+
+**2.**	Given that New York has 62 counties and it would be hard to make a chart representing each of them well, I tried to show these changes in the second section using the New York economic region's boundaries. I chose a stream chart to display the data over time because I wanted to show trends in the increased proportion between the areas simultaneously. Besides, it allowed me to avoid lines overlapping within the chart. I included a map showing the proportion increase in 2021 compared to 2009 per economic region. My idea of plotting both chart and map is to show that the rise in homeless students is unrelated to the region area size and that only looking at the percentage increase does not represent the number of students per region well. 
+
+**3.**	In the third section, I use a line chart to show which schools these students attend and how disproportional it is over time. I also included a bar chart showing the proportion changes in 2021 compared to 2009. 
+
+**4.** The fourth section is dedicated to the show the students' proportion per school grade over time, using a bumpchart. My choice for a bumpchat was because it allowed me to show the overlap between lines and trends better than the line chart. This section also has a bar chart comparing 2021 to 2009 for each grade. Since I do not have the data relative to students' age, I considered using grades to proxy how old these people living in homeless conditions are.
+
+The figure below is a free-hand draft I made before designing the infographic using Adobe Illustrator®.
+![](C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/02_figure/project1_draft_YuriSouza.jpeg)
+\pagebreak
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -138,10 +157,10 @@ homeless.tables.bind.year.region.pct.diff <- homeless.tables.bind.year.region %>
                 `2020i` = (((`2019`-`2020`)*100)/(`2019`)),
                 `2021i` = (((`2020`-`2021`)*100)/(`2020`))) %>% 
   dplyr::filter_all(all_vars(!is.infinite(.))) #%>% 
-  tidyr::pivot_longer(cols = 2:13, values_to = "DIFF_PCT", names_to = "YEAR") %>% 
-  dplyr::select(c(1,3,2)) %>% 
-  mutate(DIFF_PCT = round(DIFF_PCT, digits = 0),
-         DIFF_STS = ifelse(DIFF_PCT >= 0, "Positive", "Negative"))
+  #tidyr::pivot_longer(cols = 2:13, values_to = "DIFF_PCT", names_to = "YEAR") %>% 
+  #dplyr::select(c(1,3,2)) %>% 
+  #mutate(DIFF_PCT = round(DIFF_PCT, digits = 0),
+  #       DIFF_STS = ifelse(DIFF_PCT >= 0, "Positive", "Negative"))
 
 
 homeless.tables.bind.year.region.pct.diff
@@ -204,18 +223,19 @@ homeless.tables.bind.year.school.diff
 #write_csv(homeless.tables.bind.year.school.diff, "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless.tables.bind.year.school.diff.csv")
 
 ```
-## Summarizing the tables by grades per regions
+## Summarizing the tables by grades
 
 ```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
 
 
-homeless.ny_regions <- readr::read_csv("00_data/regions_ny.csv") %>% 
-  dplyr::unique()
+homeless.ny_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/regions_ny.csv") %>% 
+  unique()
 
-homeless.ny_grades_regions <- readr::read_csv("00_data/00_homeless_student_grades.csv") %>%        dplyr::left_join(homeless.ny_regions) %>% 
+homeless.ny_grades_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/00_homeless_student_grades.csv") %>%        
+  dplyr::left_join(homeless.ny_regions) %>% 
   dplyr::select(c(20, 3:14,19)) %>% 
   tidyr::pivot_longer(cols = 2:13, values_to = "Grades", names_to = "Age") %>% 
-  readr::write_csv("00_data/ny_homeless_student_grades_region.csv") %>% 
+  #readr::write_csv("00_data/ny_homeless_student_grades_region.csv") %>% 
   dplyr::group_by(Year, Age) %>% 
   summarise(value = sum(Grades)) %>% 
   dplyr::ungroup() %>% 
@@ -223,10 +243,25 @@ homeless.ny_grades_regions <- readr::read_csv("00_data/00_homeless_student_grade
   tidyr::pivot_wider(names_from = "Year", values_from = "value") %>% 
   dplyr::mutate(DIFF = `2021`-`2009`,
                 PCT_INCREASE = ((DIFF*100)/(`2009`))) %>% 
-  dplyr::filter(PCT_INCREASE != 0) %>% 
-  #tidyr::pivot_longer(cols = 2:3, names_to = "Year", values_to = "Indiv") %>% 
-  readr::write_csv("00_data/ny_homeless_student_grades_region_diff.csv")
+  dplyr::filter(PCT_INCREASE != 0) #%>% 
+  #readr::write_csv("00_data/ny_homeless_student_grades_region_diff.csv")
   
 
 
 ```
+
+\pagebreak
+
+
+# **First Version**
+
+The page below is the first version of the project proposed here. Some considerations I have for the second version:
+
+**1.**	Maybe remove the bar chart of section three or include it within the line chart in this section since this bar chart seems a little redundant.
+
+**2.**	Finding some neat way to replace or show the bumpchat chart in section four.
+
+**3.**	Draw an image at the top of the last chart of section four. 
+
+**4.**	Include information about where these students live when they are not in school.
+
