@@ -250,6 +250,27 @@ homeless.ny_grades_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/
 
 ```
 
+## Summarizing the tables per overnighting 
+
+```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+
+
+homeless.ny_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/regions_ny.csv") %>% 
+  unique()
+
+homeless.ny_overnight_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-07-23/Project_1/homeless_infographics_P1/00_data/homeless_student_home.csv") %>%        
+  dplyr::left_join(homeless.ny_regions) %>% 
+  dplyr::select(c(7, 2:6)) %>% 
+  tidyr::pivot_longer(cols = 2:5, values_to = "Value", names_to = "Home") %>% 
+  dplyr::filter(!Value == 0) %>% 
+  dplyr::filter(Year == "2009" | Year == "2021") %>% 
+  dplyr::mutate(Year_fct = as.string(Year)) %>% 
+  readr::write_csv("00_data/homeless.ny_overnight_regions.csv") 
+  
+
+
+```
+
 \pagebreak
 
 
