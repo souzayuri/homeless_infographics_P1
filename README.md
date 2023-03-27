@@ -1,0 +1,1 @@
+These folders contain the data I used for the 1st project of the Infographic course (JMM622-O) that I took at the University of Miami. Even though the data are organized within an R project structure, there is a need to provide the full path of the tables to be read and created because of the path definition at the beginning of the script.
