@@ -1,7 +1,7 @@
 ---
 title: "Project One: Homelessness"
 author: "Yuri Souza"
-date: "2023-03-28"
+date: "2023-04-02"
 output:
   pdf_document: default
   html_document: default
@@ -48,11 +48,33 @@ In the second version, I changed the second graph to a slope chart to avoid the 
 
 # **Third Version**
 
-In the third version, I changed the third and fourth charts to a line and bar chart, respectively. The reason was to make the stylish less chaotic and to highlight the last chart, as it is the main chart on the infographic. I also removed the illustrations because they did not fit the story well and the magazine's style. I changed the colors according to The Economists requirements.
+I changed the third and fourth charts to a line and bar chart in the third version, respectively. The reason was to make the stylish less chaotic and to highlight the last chart, as it is the main chart on the infographic. Besides, using bar charts seemed more reasonable to compare the years and to get the point straight to the point.
+
+I also removed the illustrations because they did not fit the story well and the magazine's style. I changed the colors according to The Economists requirements.
 
 I am considering changing charts three and four about the homeless home after school for the fourth version since it seems to occupy considerable space and bring more attention than they should. For graph three, I am considering plotting the line chart above its respective bar graph, keeping them the same size. For graph four, I am thinking of splitting it into four charts (one for each type of home)
 
 \pagebreak
+
+# **Forth/final Version**
+
+In the fourth and final version, I kept the same structure but focusing more on fixing typos and spaces between boxes. I also changed the text font size. 
+The last chart, the main one, looked weird because of the curve lines that were so thick, so I tried to make it thin, and I think it looked better. However, when saving it as PDF, there was no change. 
+
+I also tried to change the two charts on the top of the second page, trying to make them separate, but they looked very weird. First, there was a big blank space because the proportion of the residence places is very different. Second, I tried to fix it by changing the scale, but then the reader would need to read each scale independently to compare each bar chart against another. So, I decided to keep just one bar chart setting the same numerical scale for every bar of home places, which looked better, in order to see the difference and compare them.
+
+This way, the final version of this project has seven charts approaching different topics.
+
+I used two line charts and one bump chart to show differences over time in the number of homeless students, the schools these students used to attend, and how many of them were in each school's grades. For the last one, I also included a bar chart for each school grade showing the absolute difference between 2009 and 2021. These two approaches also allowed having an idea of how old these students were.
+
+I used a slope chart to show the trends and absolute differences across New York state economic regions. I aimed to show that a higher proportion of increase does not necessarily mean a high number of students. Most charts and infographics on the internet used to show differences using percentage differences, but we need to be careful using this approach because we may end up making assumptions that might impact human resources decisions. I used two maps to show these differences across New York state, one for counties and another one for economic regions. 
+
+I tried to use bar charts to show the differences between 2009 and 2021 for each data and information I had, including school types and residences these students spent overnight after school.
+
+The story of this project shows that New York state has many students under homeless conditions, which increased from 2009 to 2021. They comprise 93% of the total homeless people in the whole state. Some counties and economic regions have more increase in proportion or several students than others. Just looking at the ratio is not enough to decide on this matter. School district type has disproportionately received more students than charter schools, which might result in an overpopulation of students and management issues. However, many students seem to have a place to stay overnight rather than on the streets. Over time, there were more old homeless students in school than younger ones, maybe because it is easier to be adopted as young as you are.
+
+\pagebreak
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -73,7 +95,7 @@ if(!require(data.table)) install.packages("data.table", dependencies = TRUE)
 
 ## Setting directories and reading tables
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 
 path <- "C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-21-23/homeless_infographics_P1/00_data"
 path
@@ -103,7 +125,7 @@ homeless.tables
 
 ## Binding the tables in a single one
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 homeless.tables.bind <- data.table::rbindlist(homeless.tables, 
                                               use.names=TRUE, 
                                               fill=FALSE, 
@@ -124,7 +146,7 @@ homeless.tables.bind
 
 ## Summarizing the tables by total individuals per year
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 
 homeless.tables.bind.year <- homeless.tables.bind %>% 
   dplyr::group_by(YEAR) %>% 
@@ -148,7 +170,7 @@ homeless.tables.bind.year.diff
 
 ## Summarizing the tables by total individuals per year and region
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 
 homeless.tables.bind.year.region <- homeless.tables.bind %>% 
   dplyr::group_by(REGION, YEAR) %>% 
@@ -205,7 +227,7 @@ homeless.tables.bind.year.region.pct.diff
 
 ## Summarizing the tables by total individuals per year and county
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 
 homeless.tables.bind.year.county <- homeless.tables.bind %>% 
   dplyr::group_by(COUNTY, YEAR) %>% 
@@ -232,7 +254,7 @@ homeless.tables.bind.year.county.diff
 
 ## Summarizing the tables by total individuals per year and school type
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 
 homeless.tables.bind.year.school <- homeless.tables.bind %>% 
   dplyr::group_by(LEA.TYPE, YEAR) %>% 
@@ -257,7 +279,7 @@ homeless.tables.bind.year.school.diff
 ```
 ## Summarizing the tables by grades
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 
 
 homeless.ny_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-21-23/homeless_infographics_P1/00_data/regions_ny.csv") %>% 
@@ -284,7 +306,7 @@ homeless.ny_grades_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/
 
 ## Summarizing the tables per overnighting 
 
-```{r, echo=TRUE, results='hide', message = FALSE, include=TRUE}
+```{r, echo=TRUE, message = FALSE, include=TRUE}
 
 
 homeless.ny_regions <- readr::read_csv("C:/Users/Yuri/My Drive/PhD/00_UM/03_graduate/00_courses/02_2nd_semester/02_infographic_I/01_class_recordings_and_slides/02_march/03-21-23/homeless_infographics_P1/00_data/regions_ny.csv") %>% 
